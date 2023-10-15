@@ -6,10 +6,10 @@ Leverages the GPU by using NVIDIA Container Toolkit.
 
 ## Setup
 ```
-git clone
+git clone https://github.com/Melanpan/wd-tagger-docker.git
+cp Dockerfile-nocuda DockerFile (or Dockerfile-cuda if you want to use Cuda)
 docker build -t wdtagger .
-docker run --rm --gpus all -p 8005:8000 wdtagger
-
+docker run --rm -p 8005:8000 wdtagger (Cuda: docker run --rm --gpus all -p 8005:8000 wdtagger)
 ```
 
 
@@ -18,35 +18,37 @@ docker run --rm --gpus all -p 8005:8000 wdtagger
 services:
     tagger:
         build: .
-        ports: "8005:8000"
+        ports:
+         - 8005:8000
         environment:
             - CACHE_PATH=/cache
             - USE_CUDA=0
         volumes:
-           - .cache:/cache
-         
+           - ./cache:/cache
+   
 ```
 ### Docker compose example (with GPU acceleration):
 ```yaml
 services:
-   tagger:
+    tagger:
         build: .
-        ports: "8005:8000"
+        ports:
+         - 8005:8000
         environment:
             - CACHE_PATH=/cache
-            - USE_CUDA=0
+            - USE_CUDA=1
         volumes:
-           - .cache:/cache
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
+           - ./cache:/cache
+        deploy:
+          resources:
+            reservations:
+              devices:
+                - driver: nvidia
+                  count: 1
+                  capabilities: [gpu]
 
+         
 ```
-
 ## Environment variables
 
 | Name              | Default   | Explanation

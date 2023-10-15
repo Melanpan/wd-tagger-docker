@@ -1,0 +1,14 @@
+FROM debian:12-slim
+EXPOSE 8000
+
+RUN apt update && apt upgrade -y && apt install python3 python3-pip libgl1-mesa-glx libglib2.0-dev  -y && apt clean -y
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+COPY requirements.txt .
+RUN python3 -m pip install -r requirements.txt --break-system-packages
+
+WORKDIR /app
+COPY . /app
+
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "-k", "uvicorn.workers.UvicornWorker", "wd_tagger:app"]
